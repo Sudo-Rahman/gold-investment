@@ -39,7 +39,7 @@ export class MetalApi {
 
 
     public async getCurrentMetalPrice(): Promise<CurrentMetalsPrice> {
-        return (await fetch(`${API_URL}latest?api_key=${METALS_API_KEY}&currency=EUR&unit=g`,
+        return (await fetch(`${API_URL}latest?api_key=${METALS_API_KEY}&currency=USD&unit=g`,
             {
                 headers: {
                     'Accept': 'application/json',

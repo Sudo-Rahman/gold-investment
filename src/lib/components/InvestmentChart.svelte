@@ -1,42 +1,89 @@
 <script lang="ts">
-    import { onMount, onDestroy } from "svelte";
+    import {onMount, onDestroy} from "svelte";
     import * as echarts from "echarts";
     import type {ECharts} from "echarts";
     import type {Investment} from "$lib/model/Investment";
     import type {CurrentMetalsPrice} from "$lib/model/CurrentMetalsPrice";
 
-    let { data = $bindable(), current_metals_price } : { data : Investment , current_metals_price : CurrentMetalsPrice} = $props();
+    let {data = $bindable(), current_metals_price}: {
+        data: Investment,
+        current_metals_price: CurrentMetalsPrice
+    } = $props();
 
-    let chartContainer : HTMLDivElement;
-    let chartInstance : ECharts;
+    let chartContainer: HTMLDivElement;
+    let chartInstance: ECharts;
 
-    let years = $derived(Array.from({ length: data.invsetissement_duration }, (_, i) => (new Date().getFullYear()) + i));
-    let estimations : number[] = [];
-    let additionals : number[]= [];
-    console.log(years)
-    console.log(data)
+    let width = "100%";
+
+    let years = $derived(Array.from({length: data.invsetissement_duration}, (_, i) => (new Date().getFullYear()) + i));
+    let estimations: number[] = [];
+    let additionals: number[] = [];
+    let golds: number[] = [];
+    let zekats: number[] = [];
 
     $effect(() => {
         years
-        if(chartInstance){
+        data.additional_freq
+        data.additional_invsetissement
+        data.invsetissement_duration
+        data.start_invsetissement
+        data.zakat
+        data.gold_return
+        data.currency
+        data.karat
+        if (chartInstance) {
             render();
         }
     })
 
     function calculate() {
-        let start_estimation = data.start_invsetissement * current_metals_price.metals.gold;
-        let start_investment = data.start_invsetissement;
-        let additional = data.additional_invsetissement * current_metals_price.metals.gold;
-        estimations = []
-        additionals = []
-        estimations.push(start_estimation)
-        additionals.push(0)
-        for (let i = 1; i < data.invsetissement_duration; i++) {
-            start_investment += data.additional_invsetissement;
-            additional += data.additional_invsetissement;
-            estimations.push(+(start_investment * current_metals_price.metals.gold).toFixed(2))
-            additionals.push(+(additional * current_metals_price.metals.gold).toFixed(2))
+        let gold_g = data.start_invsetissement;
+        let additional_invsetissement = data.additional_freq === "month" ? data.additional_invsetissement * 12 : data.additional_invsetissement;
+
+        estimations = [];
+        additionals = [];
+        golds = [];
+        zekats = [];
+
+        additionals.push(additional_invsetissement);
+        estimations.push(+(gold_g * current_metals_price.metals.gold).toFixed(2) + additionals[0]);
+        golds.push(gold_g + getAdditionalInvestment(0));
+        if (data.zakat) {
+            if(gold_g > 85) zekats.push(+(gold_g * 0.025 * current_metals_price.metals.gold).toFixed(2));
+            else zekats.push(0);
         }
+
+        for (let year = 1; year < data.invsetissement_duration; year++) {
+            if (data.zakat) {
+                if(gold_g > 85) zekats.push(+(gold_g * 0.025 * getGoldPrice(year + 1)).toFixed(2));
+                else zekats.push(0);
+            }
+            gold_g += getAdditionalInvestment(year);
+            golds.push(gold_g);
+            additional_invsetissement += data.additional_freq === "month" ? data.additional_invsetissement * 12 : data.additional_invsetissement;
+
+            additionals.push(additional_invsetissement);
+            estimations.push(+(gold_g * getGoldPrice(year + 1)).toFixed(2));
+        }
+    }
+
+    // return the estimated price of gold for a given year
+    function getGoldPrice(year: number): number {
+        let start = current_metals_price.metals.gold * (data.karat / 24);
+        for (let i = 1; i < year; i++) {
+            start = start * data.gold_return;
+        }
+        return start;
+    }
+
+    // return the quantity of gold in g bought with the additional investment
+    function getAdditionalInvestment(year: number): number {
+        let invested_amount = data.additional_invsetissement;
+        if (data.additional_freq === "month") {
+            invested_amount = invested_amount * 12;
+        }
+
+        return invested_amount / getGoldPrice(year);
     }
 
 
@@ -47,7 +94,15 @@
 
             render();
 
+            // Gestion de redimensionnement
+            const resizeObserver = new ResizeObserver(() => {
+                chartInstance.resize();
+            });
+
+            resizeObserver.observe(chartContainer);
+
             onDestroy(() => {
+                resizeObserver.disconnect();
                 chartInstance.dispose();
             });
         }
@@ -55,40 +110,84 @@
 
     function render() {
         calculate()
-        const chartOptions = {
+        const chartOptions : any = {
             title: {
-                text: "Investissement",
+                text: "",
             },
-            tooltip: {},
+            tooltip: {
+                trigger: 'axis',
+                formatter: (params : any) => {
+                    let tooltip = "";
+                    params.forEach((param : any) => {
+                        tooltip += `${param.marker} ${param.seriesName}: ${param.value.toLocaleString(undefined, {
+                            style: 'currency',
+                            currency: data.currency,
+                        })}</br>`;
+                    });
+
+                    if(data.zakat) {
+                        tooltip += `Estimation - Zekat: ${(params[0].value - params[2].value).toLocaleString(undefined, {
+                            style: 'currency',
+                            currency: data.currency,
+                        })}</br>`;
+                    }
+
+                    tooltip += `Gold: ${golds[params[0].dataIndex].toFixed(2)}g`;
+
+                    return tooltip;
+                },
+            },
             xAxis: {
                 type: "category",
-                data : years
+                data: years
 
+            },
+            legend: {
+                data: ['Estimation', 'Investment'],
             },
             yAxis: {
                 type: "value",
             },
             series: [
                 {
-                    name: "estimation",
+                    name: "Estimation",
                     type: "line",
                     data: estimations,
                 },
                 {
-                    name: "investment",
+                    name: "Investment",
                     type: "line",
                     data: additionals,
                 }
             ],
         };
 
+        if (data.zakat) {
+            chartOptions.series.push({
+                name: "Zakat",
+                type: "line",
+                data: zekats,
+            });
+            chartOptions.legend.data.push("Zakat");
+        }
+
         // apply options
-        chartInstance.setOption(chartOptions as any);
+        setTimeout(() => {
+            chartInstance.clear();
+            chartInstance.setOption(chartOptions);
+        }, 1);
     }
 </script>
 
 
+<style>
+    .chart-container {
+        width: var(--chart-width, 100%);
+    }
+</style>
+
 <div
         bind:this={chartContainer}
-        class="w-full h-full"
+        class="chart-container h-full"
+        style="--chart-width: {width};"
 ></div>

@@ -57,6 +57,9 @@
             yAxis: {
                 type: "value",
             },
+            textStyle: {
+                color: 'white'
+            },
             series: [
                 {
                     name: "Price",
@@ -65,7 +68,8 @@
                     tooltip: {
                         trigger: 'item', // Définir le déclencheur global si nécessaire
                         formatter: (params: any) => {
-                            return `${params.marker} ${params.seriesName}: ${params.value.toLocaleString(undefined, {
+                            console.log(params)
+                            return `<strong>${params.name}</strong></br>${params.marker} ${params.seriesName}: ${params.value.toLocaleString(undefined, {
                                 style: 'currency',
                                 currency: chart_data.currency,
                             })}`;

@@ -19,7 +19,13 @@
         currency: "USD",
         karat: 24,
         zakat: false,
+        remove_zakat_investment: false,
         gold_return: 1.1
+    })
+
+    $effect(() => {
+        chartData.remove_zakat_investment = chartData.zakat ? chartData.remove_zakat_investment : false;
+
     })
 
     const frequency = [
@@ -41,6 +47,7 @@
             karat: 24,
             currency: "USD",
             zakat: false,
+            remove_zakat_investment: false,
             gold_return: 1.1
         };
     }
@@ -49,18 +56,20 @@
 </script>
 
 
-<div class="flex items-center h-screen w-full flex-col justify-around min-w-[52rem] p-12">
+<div class="flex items-center h-full space-y-24 p-12 w-full flex-col bg-[url('/Dark-Z17Pro.jpg')] bg-cover min-w-[56rem]">
 
     <h1 class="text-4xl mt-10 font-bold">Gold Investisment</h1>
 
-    <div class="items-center flex w-[50%] min-w-[52rem] h-[48rem]">
-        <TimeSeriesChart data={data.metalsTimeSeries} bind:chart_data={chartData}/>
+    <div class="flex justify-center w-full ">
+        <div class="items-center flex w-[50%] min-w-[52rem] h-[48rem]  border-white/20 border bg-background/20 backdrop-blur-md rounded-xl">
+            <TimeSeriesChart data={data.metalsTimeSeries} bind:chart_data={chartData}/>
+        </div>
     </div>
 
-    <div class="w-[50%] min-w-[52rem] flex flex-col items-center p-12 rounded-sm space-y-10 bg-blue-300">
+    <div class="w-[50%] min-w-[52rem] flex flex-col items-center subpixel-antialiased p-12 rounded-xl space-y-10 border-white/20 border bg-background/20 backdrop-blur-md">
 
         <div class="flex items-center w-full">
-            <Label class="text-xl font-bold w-96">Starting possession: </Label>
+            <Label class="text-xl font-bold w-96 ">Starting possession: </Label>
             <div class="flex items-center space-x-1 w-full justify-end">
                 <Input bind:value={chartData.start_invsetissement} type="number"
                        class="w-fit transition-all duration-500 ease-in-out"/>
@@ -104,17 +113,24 @@
             <Label class="text-xl font-bold w-96">Gold return : </Label>
 
             <div class="flex items-center space-x-1 w-full justify-end">
-                <Input type="number" class="w-fit transition-all duration-500 ease-in-out" step={0.05} min={1} max={2}
+                <Input type="number" class="w-fit transition-all duration-500 ease-in-out" step={0.05} min={1}
+                       max={2}
                        bind:value={chartData.gold_return}></Input>
                 <Label class="text-xl">%</Label>
             </div>
         </div>
 
-        <div class="flex items-center w-full">
+        <div class="flex items-center w-full ">
             <Label class="text-xl font-bold w-96">Zakat : </Label>
 
-            <div class="flex items-center w-full justify-end">
-                <Switch bind:checked={chartData.zakat}></Switch>
+            <div class="flex flex-col items-center space-y-4 w-full">
+                <div class="flex w-full justify-end items-center space-x-4">
+                    <Switch bind:checked={chartData.zakat}></Switch>
+                </div>
+                <div class="flex w-full justify-end items-center space-x-4">
+                    <Label class="text-xl">Remove zakat from investment</Label>
+                    <Switch bind:checked={chartData.remove_zakat_investment} disabled={!chartData.zakat}></Switch>
+                </div>
             </div>
         </div>
 

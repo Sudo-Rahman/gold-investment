@@ -6,5 +6,6 @@ export interface Investment{
     currency : "AUD" |"BRL" | "CAD" | "CHF" | "CNY" | "EUR" | "GBP" | "HKD" | "INR" | "JPY" | "SGD" | "USD",
     karat : 22 | 24,
     zakat : boolean,
+    remove_zakat_investment : boolean,
     gold_return : number,
 }

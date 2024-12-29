@@ -62,6 +62,10 @@
             golds.push(gold_g);
             additional_invsetissement += data.additional_freq === "month" ? data.additional_invsetissement * 12 : data.additional_invsetissement;
 
+            if (data.remove_zakat_investment) {
+                additional_invsetissement -= zekats[year];
+            }
+
             additionals.push(additional_invsetissement);
             estimations.push(+(gold_g * getGoldPrice(year + 1)).toFixed(2));
         }
@@ -117,7 +121,11 @@
             tooltip: {
                 trigger: 'axis',
                 formatter: (params : any) => {
-                    let tooltip = "";
+
+                    // string to html element
+                    let marker = new DOMParser().parseFromString(params[0].marker, 'text/html').body.firstChild as HTMLElement;
+
+                    let tooltip = `<strong>${params[0].name}</strong></br>`;
                     params.forEach((param : any) => {
                         tooltip += `${param.marker} ${param.seriesName}: ${param.value.toLocaleString(undefined, {
                             style: 'currency',
@@ -125,14 +133,20 @@
                         })}</br>`;
                     });
 
-                    if(data.zakat) {
-                        tooltip += `Estimation - Zekat: ${(params[0].value - params[2].value).toLocaleString(undefined, {
+
+                    if(data.remove_zakat_investment){
+                        marker.style.backgroundColor = 'rgba(255,255,255,0)';
+                        marker.innerHTML = '💰';
+                        tooltip += `${marker.outerHTML} investment: ${(data.additional_invsetissement - zekats[params[0].dataIndex]).toLocaleString(undefined, {
                             style: 'currency',
                             currency: data.currency,
                         })}</br>`;
                     }
 
-                    tooltip += `Gold: ${golds[params[0].dataIndex].toFixed(2)}g`;
+                    marker.style.backgroundColor = 'rgba(255,255,255,0)';
+                    // pice of gold
+                    marker.innerHTML = '🪙';
+                    tooltip += `${marker.outerHTML} Total gold: ${golds[params[0].dataIndex].toFixed(2)}g`;
 
                     return tooltip;
                 },
@@ -142,20 +156,26 @@
                 data: years
 
             },
+            textStyle: {
+                color: 'white'
+            },
             legend: {
-                data: ['Estimation', 'Investment'],
+                data: ['Total estimation', 'Total investment'],
+                textStyle: {
+                    color: 'white'
+                }
             },
             yAxis: {
                 type: "value",
             },
             series: [
                 {
-                    name: "Estimation",
+                    name: "Total estimation",
                     type: "line",
                     data: estimations,
                 },
                 {
-                    name: "Investment",
+                    name: "Total investment",
                     type: "line",
                     data: additionals,
                 }

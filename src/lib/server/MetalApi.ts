@@ -1,7 +1,11 @@
 import type {CurrentMetalsPrice} from '$lib/model/CurrentMetalsPrice';
-import {METALS_API_KEY} from "$env/static/private";
+import { env } from '$env/dynamic/private';
 import {format} from 'date-fns';
 import type {MetalsTimeSeries} from "$lib/model/MetalsTimeSeries";
+import type {CurrentCurrencies} from "$lib/model/CurrentCurrencies";
+import 'dotenv/config';
+
+const METALS_API_KEY = env.METALS_API_KEY || null;
 
 
 const API_URL = "https://api.metals.dev/v1/";
@@ -40,6 +44,16 @@ export class MetalApi {
 
     public async getCurrentMetalPrice(): Promise<CurrentMetalsPrice> {
         return (await fetch(`${API_URL}latest?api_key=${METALS_API_KEY}&currency=USD&unit=g`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                },
+            }
+        )).json();
+    }
+
+    public async getCurrentCurrencies(): Promise<CurrentCurrencies> {
+        return (await fetch(`${API_URL}currencies?api_key=${METALS_API_KEY}&base=USD`,
             {
                 headers: {
                     'Accept': 'application/json',

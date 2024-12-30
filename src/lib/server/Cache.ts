@@ -3,6 +3,7 @@ import { writeFile, readFile, access,mkdir } from 'fs/promises';
 import path from 'path';
 import {format} from "date-fns";
 import type {CurrentMetalsPrice} from "$lib/model/CurrentMetalsPrice";
+import type {CurrentCurrencies} from "$lib/model/CurrentCurrencies";
 
 export class CacheApiResponse{
 
@@ -90,6 +91,52 @@ export class CacheApiResponse{
 
         try {
             // Vérifier si le répertoire existe, sinon le créer
+            await access(cacheDir).catch(async () => {
+                await mkdir(cacheDir, { recursive: true });
+            });
+
+            await writeFile(cacheFile, JSON.stringify({
+                data : data,
+                date: format(now, 'yyyy-MM-dd')
+            }), 'utf-8');
+        } catch {}
+    }
+
+
+    public async getCurrentCurrencies() : Promise<CurrentCurrencies | null> {
+        const cacheDir = path.join(process.cwd(), 'cache');
+        const cacheFile = path.join(cacheDir, `current-currencies`);
+
+        const now = new Date();
+
+        try {
+            // verify if the directory exists, if not create it
+            await access(cacheDir).catch(async () => {
+                await mkdir(cacheDir, { recursive: true });
+            });
+
+            // verify if cache exists
+            await access(cacheFile);
+            const cached = await readFile(cacheFile, 'utf-8');
+            const { data, date } = JSON.parse(cached);
+
+            // verify if the cache is expired
+            const parsed_date = format(new Date(date), 'yyyy-MM-dd');
+            if (parsed_date === format(now, 'yyyy-MM-dd')) {
+                return data as CurrentCurrencies;
+            }
+        } catch {return null;}
+        return null;
+    }
+
+    public async cacheCurrentCurrencies(data: CurrentCurrencies) : Promise<void> {
+        const now = new Date();
+
+        const cacheDir = path.join(process.cwd(), 'cache');
+        const cacheFile = path.join(cacheDir, `current-currencies`);
+
+        try {
+            // verify if the directory exists, if not create it
             await access(cacheDir).catch(async () => {
                 await mkdir(cacheDir, { recursive: true });
             });

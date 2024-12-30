@@ -4,23 +4,26 @@
     import * as echarts from "echarts";
     import type {MetalsTimeSeries} from "$lib/model/MetalsTimeSeries";
     import type {Investment} from "$lib/model/Investment";
+    import type {CurrentCurrencies} from "$lib/model/CurrentCurrencies";
 
-    let { data = $bindable(), chart_data = $bindable() } : {
+    let {data = $bindable(), chart_data = $bindable(),current_currencies}: {
         data: MetalsTimeSeries,
         chart_data: Investment
+        current_currencies: CurrentCurrencies
     } = $props();
 
-    let chartContainer : HTMLDivElement;
-    let chartInstance : ECharts;
+    let chartContainer: HTMLDivElement;
+    let chartInstance: ECharts;
 
     $effect(() => {
         chart_data.currency
-        if(chartInstance) {
+        chart_data.karat
+        if (chartInstance) {
             render();
         }
     });
 
-     let width = "100%";
+    let width = "100%";
 
     onMount(() => {
         if (chartContainer) {
@@ -28,8 +31,7 @@
             chartInstance = echarts.init(chartContainer);
 
 
-
-            // Gestion de redimensionnement
+            // resize chart on window resize
             const resizeObserver = new ResizeObserver(() => {
                 chartInstance.resize();
             });
@@ -47,9 +49,21 @@
     });
 
 
-    function render(){
-        const chartOptions : any = {
-            tooltip: {},
+    function render() {
+        const chartOptions: any = {
+            tooltip: {
+                trigger: "axis",
+                formatter: (params: any) => {
+                    let tooltip = `<strong>${params[0].name}</strong></br>`;
+                    params.forEach((param: any) => {
+                        tooltip += `${param.marker} ${param.seriesName}: ${param.value.toLocaleString(undefined, {
+                            style: 'currency',
+                            currency: chart_data.currency,
+                        })}`;
+                    })
+                    return tooltip;
+                },
+            },
             xAxis: {
                 type: "category",
                 data: Object.keys(data.rates),
@@ -64,27 +78,17 @@
                 {
                     name: "Price",
                     type: "line",
-                    data: Object.values(data.rates).map((rate)=> (+((rate.metals.gold / 31.1034768)/rate.currencies[chart_data.currency]).toFixed(2))),
-                    tooltip: {
-                        trigger: 'item', // Définir le déclencheur global si nécessaire
-                        formatter: (params: any) => {
-                            console.log(params)
-                            return `<strong>${params.name}</strong></br>${params.marker} ${params.seriesName}: ${params.value.toLocaleString(undefined, {
-                                style: 'currency',
-                                currency: chart_data.currency,
-                            })}`;
-                        },
-                    },
+                    data: Object.values(data.rates).map((rate) => (+((rate.metals.gold / 31.1034768) / current_currencies.currencies[chart_data.currency] * (chart_data.karat / 24)).toFixed(2))),
                     smooth: true,
                 },
             ],
             animationEasing: 'cubicOut',
         };
 
+        // apply options
         setTimeout(() => {
             chartInstance.setOption(chartOptions);
         }, 1);
-        // apply options
     }
 
 </script>

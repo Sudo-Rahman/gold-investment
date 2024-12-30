@@ -13,19 +13,32 @@ export const load: PageServerLoad = async () => {
         nowMinus30Days.setDate(now.getDate() - 30);
 
         metalsTimeSeries = await metalApi.getMetalTimeSeries(nowMinus30Days, now);
-        await cacheApiResponse.cacheMetalsTimeSeries(metalsTimeSeries);
+
+        if(metalsTimeSeries.status === "success")
+            await cacheApiResponse.cacheMetalsTimeSeries(metalsTimeSeries);
     }
 
     let currentMetalsPrice = await cacheApiResponse.getCurrentMetalPrice();
     if (!currentMetalsPrice) {
         currentMetalsPrice = await metalApi.getCurrentMetalPrice();
 
-        await cacheApiResponse.cacheCurrentMetalPrice(currentMetalsPrice);
+        if(currentMetalsPrice.status === "success")
+            await cacheApiResponse.cacheCurrentMetalPrice(currentMetalsPrice);
+    }
+
+    let currentCurrencies = await cacheApiResponse.getCurrentCurrencies();
+    if (!currentCurrencies) {
+        currentCurrencies = await metalApi.getCurrentCurrencies();
+
+        if(currentCurrencies.status === "success")
+            await cacheApiResponse.cacheCurrentCurrencies(currentCurrencies);
+
     }
 
     return {
         metalsTimeSeries: metalsTimeSeries,
         currentMetalsPrice: currentMetalsPrice,
+        currentCurrencies: currentCurrencies
     };
 
 };

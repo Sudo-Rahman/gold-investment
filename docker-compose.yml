@@ -1,0 +1,10 @@
+services:
+  gold-investment:
+    image: rahman71/gold-investment:latest
+    container_name: gold-investment
+    ports:
+      - "8080:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    command: node build

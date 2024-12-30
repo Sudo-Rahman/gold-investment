@@ -2,12 +2,15 @@
     import {onMount, onDestroy} from "svelte";
     import * as echarts from "echarts";
     import type {ECharts} from "echarts";
-    import type {Investment} from "$lib/model/Investment";
+    import {type Investment} from "$lib/model/Investment";
     import type {CurrentMetalsPrice} from "$lib/model/CurrentMetalsPrice";
+    import type {CurrentCurrencies} from "$lib/model/CurrentCurrencies";
 
-    let {data = $bindable(), current_metals_price}: {
+
+    let {data = $bindable(), current_metals_price, current_currencies}: {
         data: Investment,
-        current_metals_price: CurrentMetalsPrice
+        current_metals_price: CurrentMetalsPrice,
+        current_currencies: CurrentCurrencies
     } = $props();
 
     let chartContainer: HTMLDivElement;
@@ -46,16 +49,16 @@
         zekats = [];
 
         additionals.push(additional_invsetissement);
-        estimations.push(+(gold_g * current_metals_price.metals.gold).toFixed(2) + additionals[0]);
+        estimations.push(+(gold_g * getGoldPrice(0)).toFixed(2) + additionals[0]);
         golds.push(gold_g + getAdditionalInvestment(0));
         if (data.zakat) {
-            if(gold_g > 85) zekats.push(+(gold_g * 0.025 * current_metals_price.metals.gold).toFixed(2));
+            if (gold_g > 85) zekats.push(+(gold_g * 0.025 * current_metals_price.metals.gold).toFixed(2));
             else zekats.push(0);
         }
 
         for (let year = 1; year < data.invsetissement_duration; year++) {
             if (data.zakat) {
-                if(gold_g > 85) zekats.push(+(gold_g * 0.025 * getGoldPrice(year + 1)).toFixed(2));
+                if (gold_g > 85) zekats.push(+(gold_g * 0.025 * getGoldPrice(year + 1)).toFixed(2));
                 else zekats.push(0);
             }
             gold_g += getAdditionalInvestment(year);
@@ -73,7 +76,7 @@
 
     // return the estimated price of gold for a given year
     function getGoldPrice(year: number): number {
-        let start = current_metals_price.metals.gold * (data.karat / 24);
+        let start = current_metals_price.metals.gold / current_currencies.currencies[data.currency] * (data.karat / 24);
         for (let i = 1; i < year; i++) {
             start = start * data.gold_return;
         }
@@ -98,7 +101,7 @@
 
             render();
 
-            // Gestion de redimensionnement
+            // resize chart on window resize
             const resizeObserver = new ResizeObserver(() => {
                 chartInstance.resize();
             });
@@ -114,19 +117,19 @@
 
     function render() {
         calculate()
-        const chartOptions : any = {
+        const chartOptions: any = {
             title: {
                 text: "",
             },
             tooltip: {
                 trigger: 'axis',
-                formatter: (params : any) => {
+                formatter: (params: any) => {
 
                     // string to html element
                     let marker = new DOMParser().parseFromString(params[0].marker, 'text/html').body.firstChild as HTMLElement;
 
                     let tooltip = `<strong>${params[0].name}</strong></br>`;
-                    params.forEach((param : any) => {
+                    params.forEach((param: any) => {
                         tooltip += `${param.marker} ${param.seriesName}: ${param.value.toLocaleString(undefined, {
                             style: 'currency',
                             currency: data.currency,
@@ -134,7 +137,7 @@
                     });
 
 
-                    if(data.remove_zakat_investment){
+                    if (data.remove_zakat_investment) {
                         marker.style.backgroundColor = 'rgba(255,255,255,0)';
                         marker.innerHTML = '💰';
                         tooltip += `${marker.outerHTML} investment: ${(data.additional_invsetissement - zekats[params[0].dataIndex]).toLocaleString(undefined, {

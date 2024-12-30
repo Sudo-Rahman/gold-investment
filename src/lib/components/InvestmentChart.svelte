@@ -41,7 +41,8 @@
 
     function calculate() {
         let gold_g = data.start_invsetissement;
-        let additional_invsetissement = data.additional_freq === "month" ? data.additional_invsetissement * 12 : data.additional_invsetissement;
+        const additional_invsetissement_ammount =data.additional_freq === "month" ? data.additional_invsetissement * 12 : data.additional_invsetissement;
+        let additional_invsetissement = additional_invsetissement_ammount;
 
         estimations = [];
         additionals = [];
@@ -63,14 +64,15 @@
             }
             gold_g += getAdditionalInvestment(year);
             golds.push(gold_g);
-            additional_invsetissement += data.additional_freq === "month" ? data.additional_invsetissement * 12 : data.additional_invsetissement;
+            additional_invsetissement += additional_invsetissement_ammount;
 
             if (data.remove_zakat_investment) {
                 additional_invsetissement -= zekats[year];
             }
 
             additionals.push(additional_invsetissement);
-            estimations.push(+(gold_g * getGoldPrice(year + 1)).toFixed(2));
+            console.log(additional_invsetissement)
+            estimations.push(+(gold_g * getGoldPrice(year + 1) + additional_invsetissement_ammount).toFixed(2));
         }
     }
 

@@ -6,6 +6,9 @@ import type {CurrentCurrencies} from "$lib/model/CurrentCurrencies";
 import 'dotenv/config';
 
 const METALS_API_KEY = env.METALS_API_KEY || null;
+if (!METALS_API_KEY) {
+    throw new Error('METALS_API_KEY is not defined');
+}
 
 
 const API_URL = "https://api.metals.dev/v1/";

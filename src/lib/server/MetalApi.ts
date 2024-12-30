@@ -7,7 +7,7 @@ import 'dotenv/config';
 
 const METALS_API_KEY = env.METALS_API_KEY || null;
 if (!METALS_API_KEY) {
-    throw new Error('METALS_API_KEY is not defined');
+    console.error('METALS_API_KEY is not set');
 }
 
 

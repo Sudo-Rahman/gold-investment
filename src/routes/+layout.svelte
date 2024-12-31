@@ -7,7 +7,7 @@
 </script>
 
 
-<div class="h-screen">
+<div class="h-screen w-fit">
     <div class="sticky top-5 z-50">
         <NavBar/>
     </div>

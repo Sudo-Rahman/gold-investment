@@ -7,13 +7,15 @@
     import TimeSeriesChart from "$lib/components/TimeSeriesChart.svelte";
     import {currencies, type Currency, type Investment, karats} from "$lib/model/Investment";
     import {Switch} from "$lib/components/ui/switch";
-    import type {PageServerData} from "../../.svelte-kit/types/src/routes/$types";
+    import type {PageServerData} from "./$types";
+    import {browser} from "$app/environment";
+    import {onMount} from "svelte";
+    import NavBar from "$lib/components/NavBar.svelte";
 
 
     let {data}: { data: PageServerData } = $props()
 
-
-    let chart_data = $state<Investment>({
+    const chart_default_data = {
         start_invsetissement: 0,
         invsetissement_duration: 10,
         additional_invsetissement: 100,
@@ -22,12 +24,26 @@
         karat: 22,
         zakat: false,
         remove_zakat_investment: false,
-        gold_return: 1.1
-    })
+        gold_return: 10
+    } as Investment;
+
+    let initial_chart_data = browser ? JSON.parse(localStorage.getItem('investment')) || chart_default_data : chart_default_data;
+
+    $effect(() => {
+        if (browser) {
+            localStorage.setItem('investment', JSON.stringify(chart_data));
+        }
+    });
+
+    let chart_data = $state<Investment>(initial_chart_data);
 
     $effect(() => {
         chart_data.remove_zakat_investment = chart_data.zakat ? chart_data.remove_zakat_investment : false;
-        chart_data.karat = karats_values.find(k => karat === k.value)?.int_value ?? 22;
+    })
+
+    onMount(() => {
+        const html = document.querySelector('html');
+        html?.classList.add('dark');
     })
 
     const frequency = [
@@ -38,7 +54,7 @@
     const karats_values = karats.map(karats => {
         return {value: karats.toString(), label: `${karats} karat`, int_value: karats}
     })
-    let karat = $state(karats_values[0].value);
+    let karat = $state(karats_values.find(k => k.int_value === chart_data.karat)?.value ?? "22");
 
 
     const triggerAdditional_freq = $derived(
@@ -46,26 +62,18 @@
     );
 
     function reset() {
-        chart_data = {
-            start_invsetissement: 0,
-            invsetissement_duration: 10,
-            additional_invsetissement: 100,
-            additional_freq: "month",
-            karat: 22,
-            currency: "USD",
-            zakat: false,
-            remove_zakat_investment: false,
-            gold_return: 1.1
-        };
+        chart_data = chart_default_data;
+        karat = chart_data.karat.toString();
     }
 
 
 </script>
 
 
-<div class="flex items-center h-full space-y-24 p-12 w-full flex-col bg-[url('/Dark-Z17Pro.jpg')] bg-cover min-w-[56rem]">
+<div class="min-h-screen">
+    <div class="text-white flex items-center h-full space-y-24 p-12 py-32 w-full flex-col bg-[url('/Dark-Z17Pro.jpg')] bg-cover min-w-[56rem]">
 
-        <h1 class="text-4xl mt-10 font-bold">Gold Investisment</h1>
+        <h1 class="text-4xl font-bold">🪙 Gold invesstment</h1>
 
         <div class="flex justify-center w-full">
             <div class="items-center relative flex w-[50%] min-w-[52rem] h-[48rem]  border-white/20 border bg-background/20 backdrop-blur-md rounded-xl">
@@ -97,7 +105,8 @@
                 <Label class="text-xl font-bold w-96 ">Karat : </Label>
 
                 <div class="flex items-center w-full justify-end">
-                    <Select.Root type="single" bind:value={karat}>
+                    <Select.Root type="single" bind:value={karat}
+                                 onValueChange={(e) => {chart_data.karat = karats_values.find(k => k.value === e)?.int_value ?? 22}}>
                         <Select.Trigger class="w-[180px]">
                             {chart_data.karat} karat
                         </Select.Trigger>
@@ -158,8 +167,8 @@
                 <Label class="text-xl font-bold w-96">Gold return : </Label>
 
                 <div class="flex items-center space-x-1 w-full justify-end">
-                    <Input type="number" class="w-fit transition-all duration-500 ease-in-out" step={0.05} min={1}
-                           max={2}
+                    <Input type="number" class="w-fit transition-all duration-500 ease-in-out" step={5} min={1}
+                           max={200}
                            bind:value={chart_data.gold_return}></Input>
                     <Label class="text-xl">%</Label>
                 </div>
@@ -191,5 +200,21 @@
             </div>
 
         </div>
-
     </div>
+</div>
+
+<svelte:head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Investment Calculator - Gold Investment</title>
+    <meta name="description"
+          content="Use our online calculator to estimate your potential profits from investing in gold. Plan your gold investments with precision.">
+    <meta name="keywords"
+          content="gold investment, gold calculator, financial planning, return on investment, 22-carat gold, 24-carat gold, gold price, currencies, gold price in all currencies">
+    <meta name="author" content="Sudo Rahman">
+    <meta property="og:title" content="Gold Investment Calculator - Gold Investment">
+    <meta property="og:description"
+          content="Estimate your potential profits from investing in gold with our online calculator. Plan your gold investments effectively.">
+    <meta property="og:url" content="https://gold-investment.sudo-rahman.fr/">
+    <meta property="og:type" content="website">
+</svelte:head>

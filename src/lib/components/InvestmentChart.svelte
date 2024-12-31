@@ -71,7 +71,6 @@
             }
 
             additionals.push(additional_invsetissement);
-            console.log(additional_invsetissement)
             estimations.push(+(gold_g * getGoldPrice(year + 1) + additional_invsetissement_ammount).toFixed(2));
         }
     }
@@ -80,7 +79,7 @@
     function getGoldPrice(year: number): number {
         let start = current_metals_price.metals.gold / current_currencies.currencies[data.currency] * (data.karat / 24);
         for (let i = 1; i < year; i++) {
-            start = start * data.gold_return;
+            start = start * (1 + (data.gold_return /100));
         }
         return start;
     }

@@ -35,6 +35,9 @@ jobs:
           PASS: ${{ secrets.SERVER_PASS }}
           DEPOYMENT_PATH: ${{ secrets.DEPOYMENT_PATH }}
         run: |
+          
+          sshpass -p "$PASS" scp -o StrictHostKeyChecking=no docker-compose.yml $USER@$HOST:$DEPOYMENT_PATH
+          
           sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
             cd $DEPOYMENT_PATH
             docker-compose stop

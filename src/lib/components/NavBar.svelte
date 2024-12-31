@@ -16,6 +16,6 @@
                 <h1 class="hidden sm:block text-accent-foreground text-lg font-semibold ml-2">🌍 World Currencies</h1>
             </a>
         </div>
-        <div class="flex-grow"/>
+        <div class="flex-grow"></div>
     </nav>
 </div>

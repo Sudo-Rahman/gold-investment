@@ -78,15 +78,31 @@
         <div class="flex bg-card shadow-foreground/10 shadow p-4 rounded-lg">
 
             <div class="flex flex-col items-center w-full">
-                <h1 class="text-2xl font-semibold text-gray-700">{rate} {selected_currency.code}
-                    = {(rate * (selected_currency_to.rate || 1)).toFixed(3)} {selected_currency_to.code}</h1>
+                <h1 class="text-2xl font-semibold text-gray-700">{rate.toLocaleString(undefined, {
+                    style: 'currency',
+                    currency: selected_currency.code,
+                    minimumFractionDigits: 3,
+                })}
+                    = {(rate * (selected_currency_to.rate || 1)).toLocaleString(undefined, {
+                        style: 'currency',
+                        currency: selected_currency_to.code,
+                        minimumFractionDigits: 3,
+                    })}</h1>
                 <Button
                         variant="outline"
                         onclick={invertCurrencies}>
                     <ArrowUpDown class="h-4 w-4"/>
                 </Button>
-                <h1 class="text-2xl font-semibold text-gray-700">{rate} {selected_currency_to.code}
-                    = {(rate * (data.currentCurrencies.currencies[selected_currency_to.code] / data.currentCurrencies.currencies[selected_currency.code])).toFixed(3)} {selected_currency.code}</h1>
+                <h1 class="text-2xl font-semibold text-gray-700">{rate.toLocaleString(undefined, {
+                    style: 'currency',
+                    currency: selected_currency_to.code,
+                    minimumFractionDigits: 3,
+                })}
+                    = {(rate * (data.currentCurrencies.currencies[selected_currency_to.code] / data.currentCurrencies.currencies[selected_currency.code])).toLocaleString(undefined, {
+                        style: 'currency',
+                        currency: selected_currency.code,
+                        minimumFractionDigits: 3,
+                    })}</h1>
 
                 <div class="grid-cols-1 grid items-stretch md:grid-cols-3 gap-4 w-full justify-center mt-6">
                     <div class="flex w-full border rounded-lg p-4 flex-col gap-1.5">
@@ -97,13 +113,13 @@
 
                     <div class="flex w-full border rounded-lg p-4 flex-col gap-1.5">
                         <Label>From</Label>
-                        <CurrenciesCombobox currencies={filtered} bind:value={selected_currency}/>
+                        <CurrenciesCombobox currencies={currencies_flag} bind:value={selected_currency}/>
                     </div>
 
 
                     <div class="flex border rounded-lg p-4 flex-col gap-1.5">
                         <Label>To</Label>
-                        <CurrenciesCombobox currencies={filtered} bind:value={selected_currency_to}/>
+                        <CurrenciesCombobox currencies={currencies_flag} bind:value={selected_currency_to}/>
                     </div>
                 </div>
 
@@ -133,12 +149,28 @@
                             </div>
                             <div class="flex flex-col w-full items-end">
                                 <div class="flex w-full justify-end">
-                                    <p class="text-gray-500">1 {selected_currency.code}
-                                        = {currency.rate} {currency.code}</p>
+                                    <p class="text-gray-500">{(1).toLocaleString(undefined, {
+                                        style: 'currency',
+                                        currency: selected_currency.code,
+                                        minimumFractionDigits: 3,
+                                    })}
+                                        = {(currency.rate || 0).toLocaleString(undefined, {
+                                            style: 'currency',
+                                            currency: currency.code,
+                                            minimumFractionDigits: 3,
+                                        })}</p>
                                 </div>
                                 <div class="flex w-full justify-end">
-                                    <p class="text-gray-500">1 {currency.code}
-                                        = {(1 / (currency.rate || 1)).toFixed(3)} {selected_currency.code}</p>
+                                    <p class="text-gray-500">{(1).toLocaleString(undefined, {
+                                        style: 'currency',
+                                        currency: currency.code,
+                                        minimumFractionDigits: 3,
+                                    })}
+                                        = {(1 / (currency.rate || 1)).toLocaleString(undefined, {
+                                            style: 'currency',
+                                            currency: selected_currency.code,
+                                            minimumFractionDigits: 3,
+                                        })}</p>
                                 </div>
                             </div>
                         </Card.Content>

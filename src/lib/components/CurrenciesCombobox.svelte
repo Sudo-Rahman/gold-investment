@@ -8,11 +8,17 @@
     import {cn} from "$lib/utils.js";
     import type {CurrenciesFlagType} from "$lib/model/currenciesFlag";
 
-    let {currencies, value = $bindable()}: { currencies: CurrenciesFlagType[], value : CurrenciesFlagType} = $props();
+    type Props = {
+        currencies: CurrenciesFlagType[],
+        value: CurrenciesFlagType,
+    }
+
+    let {currencies, value = $bindable()}: Props = $props();
 
     let open = $state(false);
-    let _code = $state("USD");
+    let _code = $state(value.code);
     let triggerRef = $state<HTMLButtonElement>(null!);
+
 
     // We want to refocus the trigger button when the user selects
     // an item from the list so users can continue navigating the

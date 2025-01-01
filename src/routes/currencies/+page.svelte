@@ -21,7 +21,7 @@
     // Save the rate and selected currencies to the local storage
     $effect(() => {
         if (browser) {
-            localStorage.setItem('rate', rate.toString());
+            localStorage.setItem('rate', (rate || 0).toString());
             localStorage.setItem('fromCurrency', selected_currency.code);
             localStorage.setItem('toCurrency', selected_currency_to.code);
         }
@@ -78,7 +78,7 @@
         <div class="flex bg-card shadow-foreground/10 shadow p-4 rounded-lg">
 
             <div class="flex flex-col items-center w-full">
-                <h1 class="text-2xl font-semibold text-gray-700">{rate.toLocaleString(undefined, {
+                <h1 class="text-2xl font-semibold text-gray-700">{(rate || 0).toLocaleString(undefined, {
                     style: 'currency',
                     currency: selected_currency.code,
                     minimumFractionDigits: 3,
@@ -93,7 +93,7 @@
                         onclick={invertCurrencies}>
                     <ArrowUpDown class="h-4 w-4"/>
                 </Button>
-                <h1 class="text-2xl font-semibold text-gray-700">{rate.toLocaleString(undefined, {
+                <h1 class="text-2xl font-semibold text-gray-700">{(rate || 0).toLocaleString(undefined, {
                     style: 'currency',
                     currency: selected_currency_to.code,
                     minimumFractionDigits: 3,

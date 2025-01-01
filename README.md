@@ -1,38 +1,50 @@
-# sv
+# Gold Investment
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Welcome to the **Gold Investment** repository, an interactive online tool designed to help investors estimate their potential gains from investing in gold.
 
-## Creating a project
+## Overview
 
-If you're seeing this, you've probably already done this step. Congrats!
+The calculator is available online at the following address: [https://gold-investment.sudo-rahman.fr/](https://gold-investment.sudo-rahman.fr/)</br>  
+The page for world currencies is accessible here: [https://gold-investment.sudo-rahman.fr/currencies](https://gold-investment.sudo-rahman.fr/currencies)
 
-```bash
-# create a new project in the current directory
-npx sv create
+## Features
 
-# create a new project in my-app
-npx sv create my-app
-```
+### Gold Investment
+- **Return on Investment Calculation**: Estimate your gains based on the amount of gold, investment duration, and additional contributions.
+- **Support for Multiple Currencies**: Convert values to your preferred currency.
+- **Carat Customization**: Choose between different gold carats (e.g., 22 carats, 24 carats) for more precise calculations.
 
-## Developing
+### World Currencies
+- **Currency Conversion**: Enables users to convert amounts between different currencies.
+- **Real-Time Exchange Rates**: Provides updated exchange rates for accurate conversions.
+- **Multi-Currency Support**: Supports a wide range of global currencies to meet the needs of international users.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Technologies Used
 
-```bash
-npm run dev
+- **Framework**: SvelteKit
+- **Languages**: TypeScript, HTML, CSS
+- **Libraries**: Lucide Icons, Tailwind CSS and Shadcn-Svelte
+- **API**: [Metals-API](https://metals.dev/) for gold and currency exchange rates
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+## Local Installation
 
-## Building
+To run this project locally, follow the steps below :
 
-To create a production version of your app:
+1. **Clone the repository** :
 
-```bash
-npm run build
-```
+   ```bash
+   git clone https://github.com/Sudo-Rahman/gold-investment.git && cd gold-investment
+   ```
+   
+2. **Install dependencies** :
 
-You can preview the production build with `npm run preview`.
+   ```bash
+    pnpm install
+    ```
+   
+3. **Start the development server** :
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+   ```bash
+   pnpm run dev
+   ```
+   

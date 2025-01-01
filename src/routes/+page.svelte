@@ -211,7 +211,7 @@
           content="Use our online calculator to estimate your potential profits from investing in gold. Plan your gold investments with precision.">
     <meta name="keywords"
           content="gold investment, gold calculator, financial planning, return on investment, 22-carat gold, 24-carat gold, gold price, currencies, gold price in all currencies">
-    <meta name="author" content="Sudo Rahman">
+    <meta name="author" content="Rahman YILMAZ">
     <meta property="og:title" content="Gold Investment Calculator - Gold Investment">
     <meta property="og:description"
           content="Estimate your potential profits from investing in gold with our online calculator. Plan your gold investments effectively.">

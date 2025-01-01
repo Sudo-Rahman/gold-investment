@@ -191,7 +191,7 @@
     <meta name="keywords"
           content="currency converter, world currencies, exchange rates, currency exchange, forex, currency rates, international money, money conversion, global currencies">
 
-    <meta name="author" content="Sudo Rahman">
+    <meta name="author" content="Rahman YILMAZ">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">

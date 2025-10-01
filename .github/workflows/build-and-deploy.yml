@@ -45,8 +45,8 @@ jobs:
           
           sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
             cd $DEPOYMENT_PATH
-            docker-compose stop
-            docker-compose rm -f
-            docker-compose pull
-            docker-compose up -d
+            docker compose stop
+            docker compose rm -f
+            docker compose pull
+            docker compose up -d
           EOF

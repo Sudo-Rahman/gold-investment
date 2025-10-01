@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:  # Permet l'exécution manuelle
 
 jobs:
   build:
